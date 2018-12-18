@@ -1,0 +1,13 @@
+
+run/TFIDF/results/.DS_Store
+run/TFIDF/.DS_Store
+run/TFIDF-not/results/.DS_Store
+run/evaluation/.DS_Store
+run/plot/.DS_Store
+run/TFIDF-not/.DS_Store
+run/BM25/results/.DS_Store
+run/BM25/.DS_Store
+run/BM25-porter/results/.DS_Store
+run/BM25-porter/.DS_Store
+run/.DS_Store
+.DS_Store
