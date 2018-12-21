@@ -93,12 +93,17 @@ def create_p_10_file(path, structure): #create the matrix with the P_10
     f.close()
 
 
-def make_datagroup(structure): #create a data array and an array group that are used to calculate the Anova
+def make_datagroup(structure, valutation): #create a data array and an array group that are used to calculate the Anova
     data = np.zeros(200)
     group = []
     for j in range(len(structure)):
         for i in range(structure[0].ntopic):
-            data[j*structure[0].ntopic+i] = float(structure[j].measure[i].ap)
+            if valutation == 'ap':
+                data[j*structure[0].ntopic+i] = float(structure[j].measure[i].ap)
+            elif valutation == 'p_10':
+                data[j*structure[0].ntopic+i] = float(structure[j].measure[i].p_10)
+            else:
+                data[j*structure[0].ntopic+i] = float(structure[j].measure[i].rprec)
             if j == 0:
                 group.append("TF_IDF")
             elif j == 1:
@@ -106,23 +111,28 @@ def make_datagroup(structure): #create a data array and an array group that are 
             elif j == 2:
                 group.append("BM25_porter")
             else:
-                group.append("TD_IDF_not")
+                group.append("TF_IDF_not")
     return data, group
 
 
-def ap_anova(structure): #create 4 arrays with Average Precision for each run
-    ap = []
+def v_anova(structure, valutation): #create 4 arrays with Average Precision for each run
+    v = []
     for j in range(len(structure)):
         data = []
         for i in range(structure[0].ntopic):
-            data.append(structure[j].measure[i].ap)
-        ap.append(data)
-    return ap
+            if valutation == 'ap':
+                data.append(structure[j].measure[i].ap)
+            elif valutation == 'p_10':
+                data.append(structure[j].measure[i].p_10)
+            else:
+                data.append(structure[j].measure[i].rprec)
+        v.append(data)
+    return v
 
 
-def anova(structure): #calculate the Anova
-    ap = ap_anova(structure)
-    f, p = stats.f_oneway(ap[0], ap[1], ap[2], ap[3])
+def anova(structure, valutation): #calculate the Anova
+    v = v_anova(structure, valutation)
+    f, p = stats.f_oneway(v[0], v[1], v[2], v[3])
     return f, p
 
 
@@ -133,23 +143,58 @@ def print_anova(f, p):
     print('P value:', p, '\n')
 
 
-def tukey(structure, alpha): #Tukey calculation pairwise and multiple comparisons and finally print the plot
-    data, group = make_datagroup(structure)
-    mc = MultiComparison(data, group)
-    result = mc.tukeyhsd(alpha)
-    fig = result.plot_simultaneous()    # Plot group confidence intervals
-    fig.set_figwidth(30)
-    fig.set_figheight(20)
-    axes = fig.gca()
-    fig.suptitle('Tukey_HSD test', fontsize=40)
-    axes.set_xlabel("Average Precision (AP)", fontsize=30)
-    axes.tick_params(labelsize=30)
-    fileplot = path+"results/run/plot/Tukey_HSD_test.png"
-    fig.savefig(fileplot, dpi=300)
-    fw = open(path+"results/run/plot/tukey_HSD.txt", "w")
-    fw.write(str(result))
-    print(result)
-    fw.close()
+def tukey(structure, alpha, valutation): #Tukey calculation pairwise and multiple comparisons and finally print the plot
+    if valutation == 'ap':
+        data, group = make_datagroup(structure, valutation)
+        mc = MultiComparison(data, group)
+        result = mc.tukeyhsd(alpha)
+        fig = result.plot_simultaneous()    # Plot group confidence intervals
+        fig.set_figwidth(30)
+        fig.set_figheight(20)
+        axes = fig.gca()
+        fig.suptitle('Tukey_HSD test', fontsize=40)
+        axes.set_xlabel("Average Precision (AP)", fontsize=30)
+        axes.tick_params(labelsize=30)
+        fileplot = path+"results/run/plot/Tukey_HSD_test_ap.png"
+        fig.savefig(fileplot, dpi=300)
+        fw = open(path+"results/run/plot/tukey_HSD_ap.txt", "w")
+        fw.write(str(result))
+        print(result)
+        fw.close()
+    elif valutation == 'p_10':
+        data, group = make_datagroup(structure, valutation)
+        mc = MultiComparison(data, group)
+        result = mc.tukeyhsd(alpha)
+        fig = result.plot_simultaneous()    # Plot group confidence intervals
+        fig.set_figwidth(30)
+        fig.set_figheight(20)
+        axes = fig.gca()
+        fig.suptitle('Tukey_HSD test', fontsize=40)
+        axes.set_xlabel("P(10)", fontsize=30)
+        axes.tick_params(labelsize=30)
+        fileplot = path+"results/run/plot/Tukey_HSD_test_p10.png"
+        fig.savefig(fileplot, dpi=300)
+        fw = open(path+"results/run/plot/tukey_HSD_p10.txt", "w")
+        fw.write(str(result))
+        print(result)
+        fw.close()
+    else:
+        data, group = make_datagroup(structure, valutation)
+        mc = MultiComparison(data, group)
+        result = mc.tukeyhsd(alpha)
+        fig = result.plot_simultaneous()    # Plot group confidence intervals
+        fig.set_figwidth(30)
+        fig.set_figheight(20)
+        axes = fig.gca()
+        fig.suptitle('Tukey_HSD test', fontsize=40)
+        axes.set_xlabel("Rprec", fontsize=30)
+        axes.tick_params(labelsize=30)
+        fileplot = path+"results/run/plot/Tukey_HSD_test_rprec.png"
+        fig.savefig(fileplot, dpi=300)
+        fw = open(path+"results/run/plot/tukey_HSD_rprec.txt", "w")
+        fw.write(str(result))
+        print(result)
+        fw.close()
 
 
 def list_rprec(structure): #prepare an array with the Rprec for the plot
@@ -167,7 +212,7 @@ def list_p_10(structure): #prepare an array with the P_10 for the plot
     for j in range(len(structure)):
         data = []
         for i in range(structure[0].ntopic):
-            data.append(float(structure[j].measure[i].rprec))
+            data.append(float(structure[j].measure[i].p_10))
         p_10.append(data)
     return p_10
 
@@ -184,7 +229,7 @@ def list_run(): #prepare an array with the runs for the plot
     run.append("TF_IDF")
     run.append("BM25")
     run.append("BM25_porter")
-    run.append("TD_IDF_not")
+    run.append("TF_IDF_not")
     return run
 
 
@@ -274,9 +319,15 @@ structure = data(file)
 create_ap_file(path, structure)
 create_rprec_file(path, structure)
 create_p_10_file(path, structure)
-f, p = anova(structure)
+f, p = anova(structure, 'ap')
 print_anova(f, p)
-tukey(structure, 0.05)
+f, p = anova(structure, 'p_10')
+print_anova(f, p)
+f, p = anova(structure, 'rprec')
+print_anova(f, p)
+tukey(structure, 0.05, 'ap')
+tukey(structure, 0.05, 'p_10')
+tukey(structure, 0.05, 'rprec')
 topic = list_topic(structure)
 rprec = list_rprec(structure)
 plot_rprec(topic, rprec)
