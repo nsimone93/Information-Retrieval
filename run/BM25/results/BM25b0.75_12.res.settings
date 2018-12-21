@@ -1,5 +1,5 @@
-# Settings of Terrier (TRECQuerying) generated for run /Users/nsimone/Desktop/HW1/terrier-core-4.4/var/results/BM25b0.75_10.res
-#Fri Dec 07 20:54:32 CET 2018
+# Settings of Terrier (TRECQuerying) generated for run /Users/nsimone/Desktop/HW1/terrier-core-4.4/var/results/BM25b0.75_12.res
+#Wed Dec 19 08:24:29 CET 2018
 terrier.var=var
 terrier.share=share
 trec.encoding=UTF-8
@@ -21,7 +21,7 @@ terrier.index.prefix=data
 trec.iteration=Q
 TrecQueryTags.doctag=TOP
 querying.preprocesses.order=
-TrecQueryTags.skip=DESC,NARR
+TrecQueryTags.skip=NARR
 tokeniser=org.terrier.indexing.tokenisation.EnglishTokeniser
 field.querying=false
 querying.postprocesses.controls=qe\:QueryExpansion
@@ -62,12 +62,12 @@ terrier.index.path=index
 trec.results.suffix=.res
 terrier.index.retrievalLoadingProfile.default=true
 querying.postfilters.controls=decorate\:SimpleDecorate,site\:SiteFilter,scope\:Scope
-TrecQueryTags.process=TOP,NUM,TITLE
+TrecQueryTags.process=TITLE,DESC
 matching.dsms=
 manager.caching.filters=false
 querying.no.negative.requirement=
 # topicfile: /Users/nsimone/Desktop/HW1/topics.351-400_trec7.txt
-# run started at: 1544212471652
-# run finished at 1544212472350
+# run started at: 1545204267695
+# run finished at 1545204269609
 # c=0.0 c_set=false
 # model=BM25
